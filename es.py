@@ -4,7 +4,7 @@ from elasticsearch import Elasticsearch
 class Elastic:
 
     def __init__(self, index_name):
-        self.es = Elasticsearch(timeout=60)
+        self.es = Elasticsearch(timeout=360)
         self.index_name = index_name
 
     def create(self, index_name, settings):
