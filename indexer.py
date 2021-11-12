@@ -5,27 +5,78 @@ from es import Elastic
 
 class Indexer:
 
-    def __init__(self, index_name, network='mainnet'):
-        self.es = Elastic(index_name)
+    def __init__(self, index_base, network='mainnet'):
+        self.es_utxo = Elastic(index_base + '_utxo')
+        self.es_web3 = Elastic(index_base + '_web3')
+        self.es_flat = Elastic(index_base + '_flat')
+        self.es_tx = Elastic(index_base + '_tx')
         if network == 'mainnet':
-            self.findora = Findora(Config.mainnet_rest)
+            self.findora = Findora(Config.mainnet_utxo, Config.mainnet_web3)
         elif network == 'testnet':
-            self.findora = Findora(Config.testnet_rest)
+            self.findora = Findora(Config.testnet_utxo, Config.testnet_web3)
         else:
-            self.findora = Findora(Config.forge_rest)
+            self.findora = Findora(Config.forge_utxo, Config.forge_web3)
 
-    # returns a json representation of block #num
-    def __get_a_block(self, num):
-        return self.findora.get_rest_block(num)
+    def index_utxo_block(self, block):
+        self.es_utxo.index(block, block['result']['block']['header']['height'])
 
-    # indexes a single block #num
-    def index_a_block(self, num):
-        self.es.index(self.__get_a_block(num), num)
+    def index_utxo_num(self, num):
+        self.es_utxo.index(self.findora.get_utxo_block(num), num)
 
-    # indexes all blocks from block #num to current block
-    def index_from(self, num):
+    def index_utxo_from(self, num):
         current_height = self.findora.get_height()
         for i in range(num, current_height):
-            self.index_a_block(i)
-            print(i)
+            self.index_utxo_num(i)
 
+    def index_web3_block(self, block):
+        self.es_web3.index(block, block['number'])
+
+    def index_web3_num(self, num):
+        self.es_web3.index(self.findora.get_web3_block(num), num)
+
+    def index_web3_from(self, num):
+        current_height = self.findora.get_height()
+        for i in range(num, current_height):
+            self.index_web3_num(i)
+
+    def index_flat_block(self, block):
+        self.es_flat.index(block, block['utxo_block_height'])
+
+    def index_flat_num(self, num):
+        utxo = self.findora.get_utxo_block(num)
+        web3 = self.findora.get_web3_block(num)
+        self.es_flat.index(self.findora.get_flat(utxo, web3), num)
+
+    def index_flat_from(self, num):
+        current_height = self.findora.get_height()
+        for i in range(num, current_height):
+            self.index_flat_num(i)
+
+    def index_tx_block(self, web3_block):
+        transactions = Findora.get_transactions(web3_block)
+        for tx in transactions:
+            self.es_tx.index(tx, tx['hash'])
+
+    def index_tx_num(self, num):
+        transactions = Findora.get_transactions(self.findora.get_web3_block(num))
+        for tx in transactions:
+            self.es_tx.index(tx, tx['hash'])
+
+    def index_tx_from(self, num):
+        current_height = self.findora.get_height()
+        for i in range(num, current_height):
+            self.index_tx_num(i)
+
+    def index_all_num(self, num):
+        utxo = self.findora.get_utxo_block(num)
+        web3 = self.findora.get_web3_block(num)
+        flat = self.findora.get_flat(utxo, web3)
+        self.index_utxo_block(utxo)
+        self.index_web3_block(web3)
+        self.index_flat_block(flat)
+        self.index_tx_block(web3)
+
+    def index_all_from(self, num):
+        current_height = self.findora.get_height()
+        for i in range(num, current_height):
+            self.index_all_num(i)
