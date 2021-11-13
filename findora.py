@@ -33,6 +33,7 @@ class Findora:
                 for key, value in tx.items():
                     if isinstance(value, HexBytes):
                         tx[key] = value.hex()
+                tx['timestamp'] = block['timestamp']
                 transactions.append(tx)
             block['transactions'] = transactions
         return block
