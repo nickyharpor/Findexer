@@ -13,6 +13,9 @@ class Elastic:
     def exists(self, index_name):
         return self.es.indices.exists(index=index_name)
 
+    def list(self, alias):
+        return self.es.indices.get_alias(index=alias).keys()
+
     def index(self, body, id):
         self.es.index(index=self.index_name,
                       document=body,
@@ -35,3 +38,6 @@ class Elastic:
 
     def get_by_id(self, id):
         return self.es.get(index=self.index_name, id=id)
+
+    def sql(self, query, format='json'): # supported formats: json, yaml, txt
+        return self.es.sql.query(body={'query': query}, format=format)

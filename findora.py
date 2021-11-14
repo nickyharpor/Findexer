@@ -49,6 +49,15 @@ class Findora:
 
     @staticmethod
     def flatten_utxo_block(block):
+        utxo_aio = ''
+        for tx in block['result']['block']['data']['txs']:
+            utxo_aio += str(tx) + ' '
+        sig_aio = ''
+        for sig in block['result']['block']['last_commit']['signatures']:
+            sig_aio += str(sig['block_id_flag']) + ' ' + \
+                       str(sig['validator_address']) + ' ' + \
+                       str(sig['timestamp']) + ' ' + \
+                       str(sig['signature']) + ' '
         flat_doc = {
             'utxo_jsonrpc': block['jsonrpc'],
             'utxo_id': block['id'],
@@ -72,19 +81,25 @@ class Findora:
             'utxo_last_results_hash': block['result']['block']['header']['last_results_hash'],
             'utxo_evidence_hash': block['result']['block']['header']['evidence_hash'],
             'utxo_proposer_address': block['result']['block']['header']['proposer_address'],
-            'utxo_data': None,
-            'utxo_evidence': None,
+            'utxo_data': utxo_aio.strip(),
+            'utxo_evidence': block['result']['block']['evidence']['evidence'],
             'utxo_last_commit_height': block['result']['block']['last_commit']['height'],
             'utxo_last_commit_round': block['result']['block']['last_commit']['round'],
             'utxo_last_commit_block_hash': block['result']['block']['last_commit']['block_id']['hash'],  # dup
             'utxo_last_commit_block_parts_total': block['result']['block']['last_commit']['block_id']['parts']['total'],  # dup
             'utxo_last_commit_block_parts_hash': block['result']['block']['last_commit']['block_id']['parts']['hash'],  # dup
-            'utxo_last_commit_signatures': None
+            'utxo_last_commit_signatures': sig_aio.strip()
         }
         return flat_doc
 
     @staticmethod
     def flatten_web3_block(block):
+        seal_aio = ''
+        for seal in block['sealFields']:
+            seal_aio += seal + ' '
+        tx_aio = ''
+        for tx in block['transactions']:
+            tx_aio += ' '.join(str(i) for i in list(tx.values())) + ' '
         flat_doc = {
             'web3_author': block['author'],
             'web3_difficulty': block['difficulty'],
@@ -97,13 +112,13 @@ class Findora:
             'web3_number': block['number'],
             'web3_parent_hash': block['parentHash'],
             'web3_receipts_root': block['receiptsRoot'],
-            'web3_seal_fields': None,
+            'web3_seal_fields': seal_aio.strip(),
             'web3_sha3_uncles': block['sha3Uncles'],
             'web3_size': block['size'],
             'web3_state_root': block['stateRoot'],
             'web3_timestamp': block['timestamp'],
             'web3_total_difficulty': block['totalDifficulty'],
-            'web3_transactions': None,
+            'web3_transactions': tx_aio.strip(),
             'web3_transactions_root': block['transactionsRoot'],
             'web3_uncles': block['uncles']
         }
@@ -113,7 +128,10 @@ class Findora:
     def get_flat(utxo_block, web3_block):
         flat_utxo = Findora.flatten_utxo_block(dict(utxo_block))
         flat_web3 = Findora.flatten_web3_block(dict(web3_block))
-        return {**flat_utxo, **flat_web3}
+        flat = {**flat_utxo, **flat_web3}
+        flat_aio = ''
+        flat_aio += ' '.join(str(i) for i in list(flat.values())) + ' '
+        flat['aio'] = flat_aio.strip()
 
     @staticmethod
     def get_transactions(web3_block):
