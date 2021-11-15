@@ -41,3 +41,42 @@ class Elastic:
 
     def sql(self, query, format='json'): # supported formats: json, yaml, txt
         return self.es.sql.query(body={'query': query}, format=format)
+
+    def get_utxo_last_indexed(self):
+        body = {
+            "aggs": {
+                "max_id": {"max": {"field": "result.block.height"}}
+            },
+            "size": 0
+        }
+        try:
+            res = self.es.search(index=self.index_name, body=body)
+            return int(res["aggregations"]["max_id"]["value"])
+        except:
+            return 0
+
+    def get_web3_last_indexed(self):
+        body = {
+            "aggs": {
+                "max_id": {"max": {"field": "number"}}
+            },
+            "size": 0
+        }
+        try:
+            res = self.es.search(index=self.index_name, body=body)
+            return int(res["aggregations"]["max_id"]["value"])
+        except:
+            return 0
+
+    def get_flat_last_indexed(self):
+        body = {
+            "aggs": {
+                "max_id": {"max": {"field": "web3_number"}}
+            },
+            "size": 0
+        }
+        try:
+            res = self.es.search(index=self.index_name, body=body)
+            return int(res["aggregations"]["max_id"]["value"])
+        except:
+            return 0

@@ -73,10 +73,16 @@ class Indexer:
         flat = self.findora.get_flat(utxo, web3)
         self.index_utxo_block(utxo)
         self.index_web3_block(web3)
-        self.index_flat_block(flat)
         self.index_tx_block(web3)
+        self.index_flat_block(flat)
 
     def index_all_from(self, num):
         current_height = self.findora.get_height()
         for i in range(num, current_height):
             self.index_all_num(i)
+
+    def get_last_indexed_block_height(self):
+        utxo = self.es_utxo.get_utxo_last_indexed()
+        web3 = self.es_web3.get_web3_last_indexed()
+        flat = self.es_web3.get_flat_last_indexed()
+        return min(utxo, web3, flat)

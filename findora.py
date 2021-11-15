@@ -99,6 +99,7 @@ class Findora:
             seal_aio += seal + ' '
         tx_aio = ''
         for tx in block['transactions']:
+            tx.pop('timestamp')
             tx_aio += ' '.join(str(i) for i in list(tx.values())) + ' '
         flat_doc = {
             'web3_author': block['author'],

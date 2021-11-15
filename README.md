@@ -12,6 +12,5 @@ Findora's blockchain data more accessible and easier to search and explore.
 * Create some visualisations
 * Prepare some status-related queries
 * Add _acc index
-* Fix x-pack security
 * Celery tasks
 * Dockerize
