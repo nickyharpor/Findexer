@@ -15,7 +15,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data01:/usr/share/elasticsearch/data
+      - ./data01:/usr/share/elasticsearch/data
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ./findexer.options:/usr/share/elasticsearch/config/jvm.options.d/findexer.options
     ports:
@@ -37,7 +37,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data02:/usr/share/elasticsearch/data
+      - ./data02:/usr/share/elasticsearch/data
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ./findexer.options:/usr/share/elasticsearch/config/jvm.options.d/findexer.options
     networks:
@@ -56,7 +56,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - data03:/usr/share/elasticsearch/data
+      - ./data03:/usr/share/elasticsearch/data
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ./findexer.options:/usr/share/elasticsearch/config/jvm.options.d/findexer.options
     networks:
@@ -70,26 +70,6 @@ services:
       - 5601:5601
     networks:
       - elastic
-
-volumes:
-  data01:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./data01
-  data02:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./data02
-  data03:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./data03
 
 networks:
   elastic:

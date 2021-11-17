@@ -1,6 +1,7 @@
 import requests
 from web3 import Web3
 from hexbytes import HexBytes
+from datetime import datetime
 
 
 class Findora:
@@ -11,12 +12,9 @@ class Findora:
         self.w3 = Web3(Web3.HTTPProvider(self.web3_url))
 
     def get_utxo_block(self, num):
-        height = 0
-        block = None
-        while height != num:
-            print('getting utxo block #' + str(num))
-            block = requests.get(self.utxo_url + '/block?height=' + str(num)).json()
-            height = int(block['result']['block']['header']['height'])
+        print('getting utxo block #' + str(num))
+        block = requests.get(self.utxo_url + '/block?height=' + str(num)).json()
+        block['result']['block']['header']['height'] = int(block['result']['block']['header']['height'])
         return dict(block)
 
     def get_web3_block(self, num):
@@ -26,6 +24,8 @@ class Findora:
         for key, value in block.items():
             if isinstance(value, HexBytes):
                 block[key] = value.hex()
+        timestamp = datetime.fromtimestamp(block['timestamp'])
+        block['timestamp'] = timestamp
         if block['transactions']:
             transactions = []
             for transaction in block['transactions']:
@@ -33,7 +33,7 @@ class Findora:
                 for key, value in tx.items():
                     if isinstance(value, HexBytes):
                         tx[key] = value.hex()
-                tx['timestamp'] = block['timestamp']
+                tx['timestamp'] = timestamp
                 transactions.append(tx)
             block['transactions'] = transactions
         return block
@@ -50,14 +50,18 @@ class Findora:
     @staticmethod
     def flatten_utxo_block(block):
         utxo_aio = ''
-        for tx in block['result']['block']['data']['txs']:
-            utxo_aio += str(tx) + ' '
+        txs = block['result']['block']['data']['txs']
+        if txs is not None:
+            for tx in txs:
+                utxo_aio += str(tx) + ' '
         sig_aio = ''
-        for sig in block['result']['block']['last_commit']['signatures']:
-            sig_aio += str(sig['block_id_flag']) + ' ' + \
-                       str(sig['validator_address']) + ' ' + \
-                       str(sig['timestamp']) + ' ' + \
-                       str(sig['signature']) + ' '
+        signatures = block['result']['block']['last_commit']['signatures']
+        if signatures is not None:
+            for sig in signatures:
+                sig_aio += str(sig['block_id_flag']) + ' ' + \
+                           str(sig['validator_address']) + ' ' + \
+                           str(sig['timestamp']) + ' ' + \
+                           str(sig['signature']) + ' '
         flat_doc = {
             'utxo_jsonrpc': block['jsonrpc'],
             'utxo_id': block['id'],
@@ -133,6 +137,7 @@ class Findora:
         flat_aio = ''
         flat_aio += ' '.join(str(i) for i in list(flat.values())) + ' '
         flat['aio'] = flat_aio.strip()
+        return flat
 
     @staticmethod
     def get_transactions(web3_block):

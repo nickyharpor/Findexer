@@ -45,7 +45,7 @@ class Elastic:
     def get_utxo_last_indexed(self):
         body = {
             "aggs": {
-                "max_id": {"max": {"field": "result.block.height"}}
+                "max_id": {"max": {"field": "result.block.header.height"}}
             },
             "size": 0
         }

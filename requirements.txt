@@ -2,3 +2,5 @@ web3
 websockets
 elasticsearch
 Flask
+Flask-APScheduler
+cmd2
