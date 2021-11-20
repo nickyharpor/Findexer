@@ -71,7 +71,7 @@ class Elastic:
     def get_flat_last_indexed(self):
         body = {
             "aggs": {
-                "max_id": {"max": {"field": "web3_number"}}
+                "max_id": {"max": {"field": "utxo_block_height"}}
             },
             "size": 0
         }

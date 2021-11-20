@@ -10,6 +10,7 @@ class Indexer:
         self.es_web3 = Elastic(index_base + '_web3')
         self.es_flat = Elastic(index_base + '_flat')
         self.es_tx = Elastic(index_base + '_tx')
+        self.network = network
         if network == 'mainnet':
             self.findora = Findora(Config.mainnet_utxo, Config.mainnet_web3)
         elif network == 'testnet':
@@ -32,7 +33,10 @@ class Indexer:
         self.es_web3.index(block, block['number'])
 
     def index_web3_num(self, num):
-        self.es_web3.index(self.findora.get_web3_block(num), num)
+        if self.network == 'mainnet':
+            self.es_web3.index(self.findora.get_web3_block(num, mainnet=True), num)
+        else:
+            self.es_web3.index(self.findora.get_web3_block(num), num)
 
     def index_web3_from(self, num):
         current_height = self.findora.get_height()
@@ -44,7 +48,10 @@ class Indexer:
 
     def index_flat_num(self, num):
         utxo = self.findora.get_utxo_block(num)
-        web3 = self.findora.get_web3_block(num)
+        if self.network == 'mainnet':
+            web3 = self.findora.get_web3_block(num, mainnet=True)
+        else:
+            web3 = self.findora.get_web3_block(num)
         self.es_flat.index(self.findora.get_flat(utxo, web3), num)
 
     def index_flat_from(self, num):
@@ -58,7 +65,10 @@ class Indexer:
             self.es_tx.index(tx, tx['hash'])
 
     def index_tx_num(self, num):
-        transactions = Findora.get_transactions(self.findora.get_web3_block(num))
+        if self.network == 'mainnet':
+            transactions = Findora.get_transactions(self.findora.get_web3_block(num, mainnet=True))
+        else:
+            transactions = Findora.get_transactions(self.findora.get_web3_block(num))
         for tx in transactions:
             self.es_tx.index(tx, tx['hash'])
 
@@ -69,11 +79,15 @@ class Indexer:
 
     def index_all_num(self, num):
         utxo = self.findora.get_utxo_block(num)
-        web3 = self.findora.get_web3_block(num)
+        if self.network == 'mainnet':
+            web3 = self.findora.get_web3_block(num, mainnet=True)
+        else:
+            web3 = self.findora.get_web3_block(num)
         flat = self.findora.get_flat(utxo, web3)
         self.index_utxo_block(utxo)
-        self.index_web3_block(web3)
-        self.index_tx_block(web3)
+        if self.network != 'mainnet':
+            self.index_web3_block(web3)
+            self.index_tx_block(web3)
         self.index_flat_block(flat)
 
     def index_all_from(self, num):
@@ -84,6 +98,9 @@ class Indexer:
 
     def get_last_indexed_block_height(self):
         utxo = self.es_utxo.get_utxo_last_indexed()
-        web3 = self.es_web3.get_web3_last_indexed()
         flat = self.es_flat.get_flat_last_indexed()
-        return min(utxo, web3, flat)
+        if self.network == 'mainnet':
+            return min(utxo, flat)
+        else:
+            web3 = self.es_web3.get_web3_last_indexed()
+            return min(utxo, web3, flat)

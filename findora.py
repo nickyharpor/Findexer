@@ -17,23 +17,27 @@ class Findora:
         block['result']['block']['header']['height'] = int(block['result']['block']['header']['height'])
         return dict(block)
 
-    def get_web3_block(self, num):
+    def get_web3_block(self, num, mainnet=False):
+        if mainnet:
+            return None
         print('getting web3 block #' + str(num))
         block_info = self.w3.eth.get_block(num, full_transactions=True)
         block = dict(block_info)
         for key, value in block.items():
             if isinstance(value, HexBytes):
                 block[key] = value.hex()
-        timestamp = datetime.fromtimestamp(block['timestamp'])
+        timestamp = datetime.fromtimestamp(block.get('timestamp')).strftime('%Y-%m-%dT%H:%M:%S%z')
         block['timestamp'] = timestamp
         if block['transactions']:
             transactions = []
-            for transaction in block['transactions']:
+            for transaction in block.get('transactions'):
                 tx = dict(transaction)
                 for key, value in tx.items():
                     if isinstance(value, HexBytes):
                         tx[key] = value.hex()
                 tx['timestamp'] = timestamp
+                tx['valueStr'] = str(tx['value'])
+                tx['value'] = float(tx['value'])
                 transactions.append(tx)
             block['transactions'] = transactions
         return block
@@ -98,6 +102,8 @@ class Findora:
 
     @staticmethod
     def flatten_web3_block(block):
+        if block is None:
+            return dict({})
         seal_aio = ''
         for seal in block['sealFields']:
             seal_aio += seal + ' '
@@ -132,8 +138,11 @@ class Findora:
     @staticmethod
     def get_flat(utxo_block, web3_block):
         flat_utxo = Findora.flatten_utxo_block(dict(utxo_block))
-        flat_web3 = Findora.flatten_web3_block(dict(web3_block))
-        flat = {**flat_utxo, **flat_web3}
+        if web3_block:
+            flat_web3 = Findora.flatten_web3_block(dict(web3_block))
+            flat = {**flat_utxo, **flat_web3}
+        else:
+            flat = flat_utxo
         flat_aio = ''
         flat_aio += ' '.join(str(i) for i in list(flat.values())) + ' '
         flat['aio'] = flat_aio.strip()
