@@ -4,3 +4,4 @@ elasticsearch
 Flask
 Flask-APScheduler
 cmd2
+gunicorn

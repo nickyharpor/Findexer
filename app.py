@@ -75,7 +75,7 @@ def status():
     }
 
 
-@app.route('/sql', methods=['GET', 'POST'])
+@app.route('/sql', methods=['POST'])
 def sql():
     network = get_param('network', 'mainnet')
     query = get_param('query')
@@ -91,8 +91,60 @@ def sql():
 @app.route('/aio_search', methods=['GET', 'POST'])
 def aio_search():
     network = get_param('network', 'mainnet')
+    size = int(get_param('size', 10))
+    start = int(get_param('start', 0))
+    query = get_param('query')
+    res = s[network].aio_search(query, size, start)
     return {
-        'version': Config.version
+        'version': Config.version,
+        'response': res
+    }
+
+
+@app.route('/get_by_height', methods=['GET', 'POST'])
+def get_by_height():
+    the_index = get_param('index', 'flat')
+    network = get_param('network', 'mainnet')
+    height = int(get_param('height'))
+    res = s[network].get_by_height(height, the_index)
+    return {
+        'version': Config.version,
+        'response': res
+    }
+
+
+@app.route('/evm_tx_by_hash', methods=['GET', 'POST'])
+def evm_tx_by_hash():
+    tx_hash = get_param('hash')
+    network = get_param('network')
+    res = s[network].evm_tx_by_hash(tx_hash)
+    return {
+        'version': Config.version,
+        'response': res
+    }
+
+
+@app.route('/utxo_by_proposer', methods=['GET', 'POST'])
+def utxo_by_proposer():
+    network = get_param('network', 'mainnet')
+    size = int(get_param('size', 10))
+    start = int(get_param('start', 0))
+    proposer = get_param('proposer')
+    res = s[network].utxo_by_proposer(proposer, size, start)
+    return {
+        'version': Config.version,
+        'response': res
+    }
+
+
+@app.route('/top_proposers', methods=['GET', 'POST'])
+def top_proposers():
+    network = get_param('network', 'mainnet')
+    num = int(get_param('num', 10))
+    res = s[network].top_proposers(num)
+    return {
+        'version': Config.version,
+        'response': res
     }
 
 
