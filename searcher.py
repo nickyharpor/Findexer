@@ -8,7 +8,11 @@ class Searcher:
         self.es = Elasticsearch(timeout=360)
 
     def sql(self, query):
-        return self.es.sql.query(body={'query': query}, format='json')
+        query = query.lower().strip()
+        if query.startswith('select') or query.startswith('desc') or query.startswith('show'):
+            return self.es.sql.query(body={'query': query}, format='json')
+        else:
+            return {}
 
     def aio_search(self, query, size, start):
         body = {

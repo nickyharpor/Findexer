@@ -53,6 +53,18 @@ class CLI(cmd2.Cmd):
     def do_Describe(self, arg):
         self.do_DESC(arg)
 
+    def do_SHOW(self, arg):
+        try:
+            self.poutput(self.es.sql.query(body={'query': 'show ' + arg}, format='txt'))
+        except:
+            traceback.print_exc()
+
+    def do_show(self, arg):
+        self.do_SHOW(arg)
+
+    def do_Show(self, arg):
+        self.do_SHOW(arg)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Findora SQL CLI', add_help=False)
