@@ -1,7 +1,9 @@
 # Findexer
 
 Findexer, as the name suggests, is a Findora indexer. It's an attempt to make 
-Findora's blockchain data more accessible and easier to search and explore. 
+Findora's blockchain data more accessible and easier to search and explore.
+
+![findexer-dashboard](images/Screenshot_0.jpg)
 
 When you fire up Findexer for the first time, it automatically starts indexing.
 Findora operates on two intertwined blockchains. First one is a privacy-focused
