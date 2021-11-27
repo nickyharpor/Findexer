@@ -1,6 +1,16 @@
 version: '2.2'
 
 services:
+  findexer:
+    image: findexer
+    build: .
+    command: gunicorn -t 300 -w 1 -b :2021 app:app
+    ports:
+      - 2021:2021
+    networks:
+      - elastic
+    depends_on:
+      - kibana
   es01:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
     container_name: es01
@@ -42,6 +52,8 @@ services:
       - ./findexer.options:/usr/share/elasticsearch/config/jvm.options.d/findexer.options
     networks:
       - elastic
+    depends_on:
+      - es01
   es03:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
     container_name: es03
@@ -61,15 +73,19 @@ services:
       - ./findexer.options:/usr/share/elasticsearch/config/jvm.options.d/findexer.options
     networks:
       - elastic
+    depends_on:
+      - es02
   kibana:
     image: docker.elastic.co/kibana/kibana:7.15.1
     container_name: kibana
     environment:
       - "ELASTICSEARCH_HOSTS=http://es01:9200"
     ports:
-      - 5601:5601
+      - 127.0.0.1:5601:5601
     networks:
       - elastic
+    depends_on:
+      - es03
 
 networks:
   elastic:

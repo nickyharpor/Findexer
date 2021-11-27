@@ -22,7 +22,10 @@ if [ ! -x /var/lib/docker ]; then
   echo "docker installed successfully!"
 fi
 echo "setting up environment..."
+grep -qxF 'vm.max_map_count=262144' /etc/sysctl.conf || echo 'vm.max_map_count=262144' >> /etc/sysctl.conf
 sysctl -w vm.max_map_count=262144
+grep -qxF 'alias finsql="docker exec -it findexer python3 /usr/src/app/sql_cli.py"' ~/.bash_aliases || echo 'alias finsql="docker exec -it findexer python3 /usr/src/app/sql_cli.py"' >> ~/.bash_aliases
+alias finsql="docker exec -it findexer python3 /usr/src/app/sql_cli.py"
 mkdir -p ./data01 ./data02 ./data03
 chmod g+rwx ./data*
 chgrp 0 ./data*
