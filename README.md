@@ -1,6 +1,7 @@
 # Findexer
 
-Findexer, as the name suggests, is a Findora indexer. It's an attempt to make 
+Findexer, as the name suggests, is mainly a Findora indexer, however it makes 
+searching, analyzing, and visualizing possible as well. It's an attempt to make 
 Findora's blockchain data more accessible and easier to search and explore.
 
 ![findexer-dashboard](images/Screenshot_0.jpg)
@@ -9,7 +10,7 @@ When you fire up Findexer for the first time, it automatically starts indexing.
 Findora operates on two intertwined blockchains. First one is a privacy-focused
 UTXO blockchain, and the second is an EVM blockchain. Findexer starts from the
 first block at `height=1` and goes up the ledger on both blockchains.
-Gradually, **four** different indices are made:
+Gradually, **four** different indices are made for each network:
 
 * `<network>_utxo`: UTXO blockchain information all indexed (nested)
 * `<network>_web3`: EVM blockchain information all indexed (nested)
@@ -24,20 +25,13 @@ yourself hours of frustration in the future.
 ## Quickstart
 
 Getting Findexer to work is pretty easy. There is an automated script that
-does everything for you. It's been tested on Ubuntu 20.04, but should work on
-most Debian-based operating systems.
+does **everything** for you. It's been tested on Ubuntu 20.04, but should work
+on most Debian-based operating systems.
 
 Simply, clone this repository and go inside it:
 
 ```
 git clone https://github.com/nickyharpor/Findexer.git && cd Findexer
-```
-
-Give execution permission to
-[run.sh](https://github.com/nickyharpor/Findexer/blob/master/run.sh):
-
-```
-chmod +x run.sh
 ```
 
 Optionally, you may do some
@@ -47,7 +41,7 @@ Finally, execute
 as a privileged user:
 
 ```
-./run.sh
+sh run.sh
 ```
 
 That's it! Wait for the script to finish. In a nutshell, the script installs
