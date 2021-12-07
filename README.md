@@ -43,7 +43,7 @@ Finally, execute
 as a privileged user:
 
 ```
-sh run.sh
+source run.sh
 ```
 
 That's it! Wait for the script to finish. In a nutshell, the script installs

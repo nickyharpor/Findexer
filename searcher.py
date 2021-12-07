@@ -68,7 +68,7 @@ class Searcher:
                     },
                     "filter": {
                         "term": {
-                            "result.block.proposer_address.keyword": {
+                            "result.block.header.proposer_address.keyword": {
                                 "value": proposer
                             }
                         }
@@ -88,9 +88,9 @@ class Searcher:
             },
             "size": 0,
             "aggs": {
-                "group_by_shabka": {
+                "group_by_proposer": {
                     "terms": {
-                        "field": "result.block.proposer_address.keyword",
+                        "field": "result.block.header.proposer_address.keyword",
                         "size": num
                     }
                 }
