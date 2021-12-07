@@ -1,11 +1,12 @@
 from elasticsearch import Elasticsearch
+from conf import Config
 
 
 class Searcher:
 
     def __init__(self, index_prefix):
         self.index_prefix = index_prefix
-        self.es = Elasticsearch(timeout=360)
+        self.es = Elasticsearch(hosts=[{'host': Config.es_host, 'port': Config.es_port}], timeout=360)
 
     def sql(self, query):
         query = query.lower().strip()

@@ -4,6 +4,7 @@ import argparse
 import traceback
 import cmd2
 from cmd2 import style
+from conf import Config
 
 
 class CLI(cmd2.Cmd):
@@ -68,10 +69,10 @@ class CLI(cmd2.Cmd):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Findora SQL CLI', add_help=False)
-    parser.add_argument('--host', '-h', required=False, default='localhost', type=str,
-                        help='Elasticsearch host name. Default: localhost')
-    parser.add_argument('--port', '-p', required=False, default=9200, type=int,
-                        help='Elasticsearch port. Default: 9200')
+    parser.add_argument('--host', '-h', required=False, default=Config.es_host, type=str,
+                        help='Elasticsearch host name. Default: ' + Config.es_host)
+    parser.add_argument('--port', '-p', required=False, default=Config.es_port, type=int,
+                        help='Elasticsearch port. Default: ' + str(Config.es_port))
     parser.add_argument('--help', action='help')
     args = parser.parse_args()
     app = CLI(args)

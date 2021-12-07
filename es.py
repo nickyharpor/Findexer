@@ -1,10 +1,11 @@
 from elasticsearch import Elasticsearch
+from conf import Config
 
 
 class Elastic:
 
     def __init__(self, index_name):
-        self.es = Elasticsearch(timeout=360)
+        self.es = Elasticsearch(hosts=[{'host': Config.es_host, 'port': Config.es_port}], timeout=360)
         self.index_name = index_name
 
     def create(self, index_name, settings):
