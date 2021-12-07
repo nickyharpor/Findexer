@@ -33,4 +33,4 @@ chmod g+rwx ./data*
 chgrp 0 ./data*
 echo "running docker containers..."
 docker-compose up -d
-echo "all done! please wait a few seconds, and then access Findexer on port 2021."
+echo "all done! please wait a few minutes, and then access Findexer on port 2021."
