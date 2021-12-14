@@ -1,8 +1,7 @@
 # Findexer
 
 _Submission for https://gitcoin.co/issue/findoranetwork/bounties/2/100026989_
-
-_Contact: nickyharpor [at-sign] mail [dot] ru_
+(1st place winner)
 
 Findexer, as the name suggests, is mainly a Findora indexer, however it makes 
 searching, analyzing, and visualizing possible as well. It's an attempt to make 
