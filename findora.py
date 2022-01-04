@@ -6,21 +6,20 @@ from datetime import datetime
 
 class Findora:
 
-    def __init__(self, utxo_url, web3_url):
+    def __init__(self, utxo_url, web3_url, network):
         self.utxo_url = utxo_url
         self.web3_url = web3_url
+        self.network = network
         self.w3 = Web3(Web3.HTTPProvider(self.web3_url))
 
     def get_utxo_block(self, num):
-        print('getting utxo block #' + str(num))
+        print('getting UTXO block #' + str(num) + ' for ' + self.network)
         block = requests.get(self.utxo_url + '/block?height=' + str(num)).json()
         block['result']['block']['header']['height'] = int(block['result']['block']['header']['height'])
         return dict(block)
 
-    def get_web3_block(self, num, mainnet=False):
-        if mainnet:
-            return None
-        print('getting web3 block #' + str(num))
+    def get_web3_block(self, num):
+        print('getting EVM block #' + str(num) + ' for ' + self.network)
         block_info = self.w3.eth.get_block(num, full_transactions=True)
         block = dict(block_info)
         for key, value in block.items():
